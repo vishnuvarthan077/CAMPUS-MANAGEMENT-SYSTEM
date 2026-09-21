@@ -1,5 +1,6 @@
 const express = require("express");
 const cors = require("cors");
+const authRoutes = require("./routes/authRoutes");
 const departmentRoutes = require("./routes/departmentRoutes");
 const courseRoutes = require("./routes/courseRoutes");
 const { notFound, errorHandler } = require("./middleware/errorHandler");
@@ -14,6 +15,7 @@ app.get("/api/health", (req, res) => {
   res.status(200).json({ success: true, message: "Campus Management API is running" });
 });
 
+app.use("/api/auth", authRoutes);
 app.use("/api/departments", departmentRoutes);
 app.use("/api/courses", courseRoutes);
 
