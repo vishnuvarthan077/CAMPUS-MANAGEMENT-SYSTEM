@@ -7,6 +7,7 @@ const notFound = (req, res, next) => {
 // eslint-disable-next-line no-unused-vars
 const errorHandler = (err, req, res, next) => {
   let statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  let statusCode = err.statusCode || (res.statusCode === 200 ? 500 : res.statusCode);
   let message = err.message || "Server Error";
 
   if (err.name === "CastError") {

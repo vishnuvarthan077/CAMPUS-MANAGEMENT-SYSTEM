@@ -36,6 +36,11 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       trim: true,
     },
+    phone: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     refreshToken: {
       type: String,
       select: false,
