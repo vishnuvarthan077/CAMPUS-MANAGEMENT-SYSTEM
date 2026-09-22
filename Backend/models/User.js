@@ -41,6 +41,16 @@ const userSchema = new mongoose.Schema(
       trim: true,
       default: null,
     },
+    registerNumber: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    department: {
+      type: String,
+      trim: true,
+      default: null,
+    },
     refreshToken: {
       type: String,
       select: false,

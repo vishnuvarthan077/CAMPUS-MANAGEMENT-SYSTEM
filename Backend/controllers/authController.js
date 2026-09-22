@@ -1,3 +1,4 @@
+const mongoose = require("mongoose");
 const User = require("../models/User");
 const asyncHandler = require("../middleware/asyncHandler");
 const {
@@ -10,7 +11,7 @@ const {
 // @route   POST /api/auth/register
 // @access  Public
 const register = asyncHandler(async (req, res) => {
-  const { name, email, password, role } = req.body;
+  const { name, email, password, role, registerNumber, department, phone } = req.body;
 
   if (!name || !email || !password) {
     return res.status(400).json({
@@ -35,11 +36,22 @@ const register = asyncHandler(async (req, res) => {
     });
   }
 
+  // Generate tokens before persisting so a config error never leaves an orphaned user record
+  const draftId = new mongoose.Types.ObjectId();
+  const tokenPayload = { _id: draftId, role: role ? role.toLowerCase() : "student" };
+  const accessToken = generateAccessToken(tokenPayload);
+  const refreshToken = generateRefreshToken(tokenPayload);
+
   // Create new user (password is automatically hashed via pre-save hook)
   const userData = {
+    _id: draftId,
     name,
     email: email.toLowerCase(),
     password,
+    registerNumber: registerNumber || null,
+    department: department || null,
+    phone: phone || null,
+    refreshToken,
   };
 
   if (role) {
@@ -47,14 +59,6 @@ const register = asyncHandler(async (req, res) => {
   }
 
   const user = await User.create(userData);
-
-  // Generate tokens
-  const accessToken = generateAccessToken(user);
-  const refreshToken = generateRefreshToken(user);
-
-  // Store refresh token in database for session tracking
-  user.refreshToken = refreshToken;
-  await user.save({ validateBeforeSave: false });
 
   res.status(201).json({
     success: true,
@@ -66,6 +70,8 @@ const register = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      registerNumber: user.registerNumber,
+      department: user.department,
     },
   });
 });
@@ -129,6 +135,8 @@ const login = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      registerNumber: user.registerNumber,
+      department: user.department,
     },
   });
 });
@@ -241,6 +249,8 @@ const getMe = asyncHandler(async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      registerNumber: user.registerNumber,
+      department: user.department,
       isActive: user.isActive,
       createdAt: user.createdAt,
     },

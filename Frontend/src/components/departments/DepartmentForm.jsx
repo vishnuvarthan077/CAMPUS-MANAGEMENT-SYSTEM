@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import React, { useState } from 'react';
+import { Save, X, AlertCircle } from 'lucide-react';
 
 const emptyForm = {
   name: '',
@@ -7,99 +8,141 @@ const emptyForm = {
   headOfDepartment: '',
   establishedYear: '',
   isActive: true,
-}
+};
 
 function DepartmentForm({ initialValues, onSubmit, onCancel, submitting }) {
-  const [form, setForm] = useState({ ...emptyForm, ...initialValues })
-  const [error, setError] = useState('')
+  const [form, setForm] = useState({ ...emptyForm, ...initialValues });
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
-    const { name, value, type, checked } = e.target
-    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }))
-  }
+    const { name, value, type, checked } = e.target;
+    setForm((prev) => ({ ...prev, [name]: type === 'checkbox' ? checked : value }));
+  };
 
   const handleSubmit = async (e) => {
-    e.preventDefault()
-    setError('')
+    e.preventDefault();
+    setError('');
 
     if (!form.name.trim() || !form.code.trim()) {
-      setError('Name and code are required')
-      return
+      setError('Department name and code are required.');
+      return;
     }
 
     try {
       await onSubmit({
         ...form,
         establishedYear: form.establishedYear ? Number(form.establishedYear) : undefined,
-      })
+      });
     } catch (err) {
-      setError(err.message)
+      setError(err.message || 'Failed to save department');
     }
-  }
+  };
 
   return (
     <form className="form" onSubmit={handleSubmit}>
-      {error && <div className="alert-error">{error}</div>}
+      {error && (
+        <div className="alert-error">
+          <AlertCircle size={18} />
+          <span>{error}</span>
+        </div>
+      )}
 
       <div className="form-grid">
-        <label>
-          <span>Name *</span>
-          <input name="name" value={form.name} onChange={handleChange} placeholder="Computer Science" />
-        </label>
+        <div className="form-group">
+          <label htmlFor="dept-name">
+            <span>Department Name *</span>
+          </label>
+          <input 
+            id="dept-name"
+            name="name" 
+            value={form.name} 
+            onChange={handleChange} 
+            placeholder="e.g. Computer Science & Eng" 
+            required
+          />
+        </div>
 
-        <label>
-          <span>Code *</span>
-          <input name="code" value={form.code} onChange={handleChange} placeholder="CSE" />
-        </label>
+        <div className="form-group">
+          <label htmlFor="dept-code">
+            <span>Department Code *</span>
+          </label>
+          <input 
+            id="dept-code"
+            name="code" 
+            value={form.code} 
+            onChange={handleChange} 
+            placeholder="e.g. CSE" 
+            style={{ textTransform: 'uppercase' }}
+            required
+          />
+        </div>
 
-        <label>
-          <span>Head of Department</span>
+        <div className="form-group">
+          <label htmlFor="dept-hod">
+            <span>Head of Department</span>
+          </label>
           <input
+            id="dept-hod"
             name="headOfDepartment"
             value={form.headOfDepartment}
             onChange={handleChange}
-            placeholder="Dr. Jane Doe"
+            placeholder="e.g. Dr. Jane Doe"
           />
-        </label>
+        </div>
 
-        <label>
-          <span>Established Year</span>
+        <div className="form-group">
+          <label htmlFor="dept-year">
+            <span>Established Year</span>
+          </label>
           <input
+            id="dept-year"
             type="number"
             name="establishedYear"
             value={form.establishedYear}
             onChange={handleChange}
-            placeholder="1998"
+            placeholder="e.g. 1998"
+            min="1900"
+            max={new Date().getFullYear()}
           />
-        </label>
+        </div>
 
-        <label className="full-width">
-          <span>Description</span>
+        <div className="form-group full-width">
+          <label htmlFor="dept-desc">
+            <span>Description</span>
+          </label>
           <textarea
+            id="dept-desc"
             name="description"
             value={form.description}
             onChange={handleChange}
             rows={3}
-            placeholder="Short description of the department"
+            placeholder="Brief description about the academic programs and goals..."
           />
-        </label>
+        </div>
 
-        <label className="checkbox-label">
-          <input type="checkbox" name="isActive" checked={form.isActive} onChange={handleChange} />
-          <span>Active</span>
-        </label>
+        <div className="form-group full-width">
+          <label className="checkbox-label" style={{ marginTop: '0.25rem' }}>
+            <input 
+              type="checkbox" 
+              name="isActive" 
+              checked={form.isActive} 
+              onChange={handleChange} 
+            />
+            <span>Department is actively enrolling students</span>
+          </label>
+        </div>
       </div>
 
       <div className="form-actions">
-        <button type="button" className="btn" onClick={onCancel}>
-          Cancel
+        <button type="button" className="btn btn-outline" onClick={onCancel} disabled={submitting}>
+          <X size={16} /> Cancel
         </button>
         <button type="submit" className="btn btn-primary" disabled={submitting}>
-          {submitting ? 'Saving...' : 'Save Department'}
+          <Save size={16} /> {submitting ? 'Saving...' : 'Save Department'}
         </button>
       </div>
     </form>
-  )
+  );
 }
 
-export default DepartmentForm
+export default DepartmentForm;
