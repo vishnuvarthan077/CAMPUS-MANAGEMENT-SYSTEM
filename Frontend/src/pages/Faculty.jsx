@@ -1,0 +1,345 @@
+import React, { useEffect, useState, useMemo } from 'react';
+import { 
+  UserSquare2, 
+  Plus, 
+  Award, 
+  Building2, 
+  AlertCircle,
+  Download,
+  BookOpen,
+  Mail,
+  MapPin,
+  GraduationCap,
+  ShieldCheck
+} from 'lucide-react';
+import { facultyService } from '../faculty/facultyService';
+import { authService } from '../services/authService';
+import FacultySearch from '../faculty/FacultySearch';
+import FacultyList from '../faculty/FacultyList';
+import FacultyForm from '../faculty/FacultyForm';
+import Modal from '../components/Modal';
+
+const Faculty = () => {
+  const currentUser = authService.getCurrentUser() || { name: 'Admin User', role: 'admin' };
+  const isStudent = currentUser.role === 'student';
+
+  const [faculty, setFaculty] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+  const [filters, setFilters] = useState({
+    search: '',
+    department: 'ALL',
+    designation: 'ALL',
+    status: 'ALL',
+  });
+  const [modalOpen, setModalOpen] = useState(false);
+  const [detailsModalOpen, setDetailsModalOpen] = useState(false);
+  const [selectedFaculty, setSelectedFaculty] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+
+  const loadFaculty = async () => {
+    setLoading(true);
+    setError('');
+    try {
+      const data = await facultyService.getFaculty(filters);
+      setFaculty(data);
+    } catch (err) {
+      setError(err.message || 'Failed to load faculty directory');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadFaculty();
+  }, [filters]);
+
+  const handleFilterChange = (key, value) => {
+    setFilters((prev) => ({ ...prev, [key]: value }));
+  };
+
+  const handleResetFilters = () => {
+    setFilters({
+      search: '',
+      department: 'ALL',
+      designation: 'ALL',
+      status: 'ALL',
+    });
+  };
+
+  const handleOpenAddModal = () => {
+    setSelectedFaculty(null);
+    setModalOpen(true);
+  };
+
+  const handleOpenEditModal = (member) => {
+    setSelectedFaculty(member);
+    setModalOpen(true);
+  };
+
+  const handleOpenDetails = (member) => {
+    setSelectedFaculty(member);
+    setDetailsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setModalOpen(false);
+    setSelectedFaculty(null);
+  };
+
+  const handleSubmit = async (payload) => {
+    setSubmitting(true);
+    try {
+      if (selectedFaculty) {
+        await facultyService.updateFaculty(selectedFaculty._id || selectedFaculty.facultyId, payload);
+      } else {
+        await facultyService.createFaculty(payload);
+      }
+      handleCloseModal();
+      await loadFaculty();
+    } catch (err) {
+      setError(err.message || 'Failed to submit faculty record');
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleDelete = async (member) => {
+    if (window.confirm(`Are you sure you want to remove "${member.name}" from faculty records?`)) {
+      try {
+        await facultyService.deleteFaculty(member._id || member.facultyId);
+        await loadFaculty();
+      } catch (err) {
+        setError(err.message || 'Failed to delete faculty record');
+      }
+    }
+  };
+
+  const handleExportCSV = () => {
+    const headers = ['Faculty ID', 'Name', 'Email', 'Phone', 'Department', 'Designation', 'Specialization', 'Office'];
+    const rows = faculty.map((f) => [
+      f.facultyId,
+      `"${f.name}"`,
+      f.email,
+      f.phone || '',
+      `"${f.department}"`,
+      `"${f.designation}"`,
+      `"${f.specialization || ''}"`,
+      `"${f.officeRoom || ''}"`,
+    ]);
+    const csvContent =
+      'data:text/csv;charset=utf-8,' +
+      [headers.join(','), ...rows.map((e) => e.join(','))].join('\n');
+    const encodedUri = encodeURI(csvContent);
+    const link = document.createElement('a');
+    link.setAttribute('href', encodedUri);
+    link.setAttribute(
+      'download',
+      `Faculty_Directory_${new Date().toISOString().split('T')[0]}.csv`
+    );
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const departmentsList = useMemo(() => {
+    return Array.from(new Set(faculty.map((f) => f.department).filter(Boolean)));
+  }, [faculty]);
+
+  const stats = facultyService.getStats(faculty);
+
+  return (
+    <div className="page">
+      {/* Header */}
+      <div className="page-header">
+        <div>
+          {isStudent && (
+            <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.4rem', background: 'var(--primary-light)', padding: '0.2rem 0.65rem', borderRadius: '9999px', color: 'var(--primary)', fontWeight: '700', fontSize: '0.75rem', textTransform: 'uppercase', marginBottom: '0.4rem' }}>
+              <ShieldCheck size={14} /> Faculty & Mentors Directory (View Only)
+            </div>
+          )}
+          <h1 className="page-title">{isStudent ? 'Faculty Mentors & Academic Advisors' : 'Faculty & Academic Leadership'}</h1>
+          <p className="page-subtitle">
+            {isStudent 
+              ? 'Find departmental professors, office room appointments, and research advisors' 
+              : 'Manage professors, departmental chairs, research specializations, and office appointments'}
+          </p>
+        </div>
+        {!isStudent && (
+          <div style={{ display: 'flex', gap: '0.75rem' }}>
+            <button type="button" className="btn btn-secondary" onClick={handleExportCSV}>
+              <Download size={18} />
+              <span>Export CSV</span>
+            </button>
+            <button type="button" className="btn btn-primary" onClick={handleOpenAddModal}>
+              <Plus size={18} />
+              <span>Add Faculty</span>
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* Stats Grid */}
+      <div className="stats-grid">
+        <div className="stat-card">
+          <div className="stat-icon-wrapper stat-icon-primary">
+            <UserSquare2 size={24} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Faculty Members</span>
+            <span className="stat-value">{stats.total}</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon-wrapper stat-icon-success">
+            <Award size={24} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Professors & Chairs</span>
+            <span className="stat-value">{stats.professors}</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon-wrapper stat-icon-info">
+            <Building2 size={24} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Departments</span>
+            <span className="stat-value">{stats.departmentsCount}</span>
+          </div>
+        </div>
+
+        <div className="stat-card">
+          <div className="stat-icon-wrapper stat-icon-warning">
+            <GraduationCap size={24} />
+          </div>
+          <div className="stat-content">
+            <span className="stat-label">Active on Campus</span>
+            <span className="stat-value">{stats.active}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <FacultySearch
+        filters={filters}
+        onFilterChange={handleFilterChange}
+        onReset={handleResetFilters}
+        departments={departmentsList}
+      />
+
+      {/* Error Alert */}
+      {error && (
+        <div className="alert-error">
+          <AlertCircle size={18} />
+          <span>{error}</span>
+        </div>
+      )}
+
+      {/* Faculty List */}
+      <FacultyList
+        faculty={faculty}
+        loading={loading}
+        onEdit={!isStudent ? handleOpenEditModal : undefined}
+        onDelete={!isStudent ? handleDelete : undefined}
+        onViewDetails={handleOpenDetails}
+      />
+
+      {/* Add / Edit Faculty Modal (Admin only) */}
+      {!isStudent && modalOpen && (
+        <Modal
+          title={selectedFaculty ? 'Edit Faculty Member' : 'Register New Faculty Member'}
+          onClose={handleCloseModal}
+        >
+          <FacultyForm
+            initialValues={selectedFaculty || {}}
+            onSubmit={handleSubmit}
+            onCancel={handleCloseModal}
+            submitting={submitting}
+          />
+        </Modal>
+      )}
+
+      {/* Profile Details Modal */}
+      {detailsModalOpen && selectedFaculty && (
+        <Modal
+          title={`Faculty Profile — ${selectedFaculty.name}`}
+          onClose={() => setDetailsModalOpen(false)}
+        >
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+            <div
+              style={{
+                display: 'flex',
+                alignItems: 'center',
+                gap: '1rem',
+                padding: '1rem',
+                backgroundColor: 'var(--primary-light)',
+                borderRadius: '0.75rem',
+              }}
+            >
+              <div
+                style={{
+                  width: '56px',
+                  height: '56px',
+                  borderRadius: '50%',
+                  background: 'var(--primary-gradient)',
+                  color: '#fff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontSize: '1.25rem',
+                  fontWeight: '800',
+                }}
+              >
+                {selectedFaculty.name.replace(/^Dr\.\s*|^Prof\.\s*/i, '').charAt(0)}
+              </div>
+              <div>
+                <h3 style={{ fontSize: '1.2rem', fontWeight: '700' }}>{selectedFaculty.name}</h3>
+                <div style={{ display: 'flex', gap: '0.5rem', marginTop: '0.25rem' }}>
+                  <span className="tag">{selectedFaculty.facultyId}</span>
+                  <span className="badge badge-active">{selectedFaculty.designation}</span>
+                </div>
+              </div>
+            </div>
+
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+              <div className="card" style={{ padding: '0.875rem' }}>
+                <span className="stat-label">Department</span>
+                <p style={{ fontWeight: '600', marginTop: '0.25rem' }}>{selectedFaculty.department}</p>
+              </div>
+              <div className="card" style={{ padding: '0.875rem' }}>
+                <span className="stat-label">Highest Qualification</span>
+                <p style={{ fontWeight: '600', marginTop: '0.25rem' }}>
+                  {selectedFaculty.qualification || 'Ph.D.'}
+                </p>
+              </div>
+              <div className="card" style={{ padding: '0.875rem' }}>
+                <span className="stat-label">Institutional Email</span>
+                <p style={{ fontWeight: '600', marginTop: '0.25rem' }}>{selectedFaculty.email}</p>
+              </div>
+              <div className="card" style={{ padding: '0.875rem' }}>
+                <span className="stat-label">Office / Lab Location</span>
+                <p style={{ fontWeight: '600', marginTop: '0.25rem' }}>
+                  {selectedFaculty.officeRoom || 'TBA'}
+                </p>
+              </div>
+            </div>
+
+            {selectedFaculty.specialization && (
+              <div className="card" style={{ padding: '1rem' }}>
+                <span className="stat-label">Research Focus & Specialization</span>
+                <p style={{ fontWeight: '500', marginTop: '0.35rem', color: 'var(--text-main)' }}>
+                  {selectedFaculty.specialization}
+                </p>
+              </div>
+            )}
+          </div>
+        </Modal>
+      )}
+    </div>
+  );
+};
+
+export default Faculty;
