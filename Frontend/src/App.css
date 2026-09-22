@@ -319,3 +319,627 @@
     padding: 16px 20px;
   }
 }
+
+/* Noticeboard */
+
+.notice-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.category-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.chip {
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--text);
+  padding: 6px 14px;
+  border-radius: 999px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.chip:hover {
+  border-color: var(--accent-border);
+}
+
+.chip-active {
+  background: var(--text-h);
+  border-color: var(--text-h);
+  color: var(--bg);
+}
+
+.notice-board {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 28px 24px;
+  padding: 8px 4px 24px;
+}
+
+.notice-note {
+  --note-color: #94a3b8;
+  position: relative;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-top: 4px solid var(--note-color);
+  border-radius: 4px 4px 8px 8px;
+  padding: 18px 18px 14px;
+  box-shadow: var(--shadow);
+  transform: rotate(var(--tilt));
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.notice-note:hover {
+  transform: rotate(0deg) translateY(-2px);
+  box-shadow: 0 14px 24px -8px rgba(0, 0, 0, 0.18);
+}
+
+.notice-note.notice-pinned {
+  box-shadow: 0 0 0 2px var(--note-color), var(--shadow);
+}
+
+.note-general {
+  --note-color: #94a3b8;
+}
+.note-academic {
+  --note-color: #3b82f6;
+}
+.note-exam {
+  --note-color: #f97316;
+}
+.note-event {
+  --note-color: #22c55e;
+}
+.note-holiday {
+  --note-color: #a855f7;
+}
+.note-urgent {
+  --note-color: #ef4444;
+}
+
+.pin-marker {
+  position: absolute;
+  top: -14px;
+  right: 16px;
+  border: none;
+  background: none;
+  font-size: 22px;
+  cursor: pointer;
+  filter: grayscale(1) opacity(0.5);
+  transition: filter 0.15s ease, transform 0.15s ease;
+}
+
+.pin-marker:hover {
+  transform: scale(1.15);
+}
+
+.notice-pinned .pin-marker {
+  filter: none;
+}
+
+.notice-note-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.notice-category {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.4px;
+  text-transform: uppercase;
+  color: var(--note-color);
+}
+
+.notice-priority-high {
+  font-size: 11px;
+  font-weight: 600;
+  color: #ef4444;
+  background: rgba(239, 68, 68, 0.12);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.notice-title {
+  margin: 0;
+  font-size: 17px;
+  color: var(--text-h);
+  line-height: 130%;
+}
+
+.notice-content {
+  margin: 0;
+  font-size: 14px;
+  line-height: 150%;
+  color: var(--text);
+  white-space: pre-wrap;
+  flex-grow: 1;
+}
+
+.notice-expired-flag {
+  align-self: flex-start;
+  font-size: 11px;
+  color: #64748b;
+  background: rgba(148, 163, 184, 0.2);
+  padding: 2px 8px;
+  border-radius: 999px;
+}
+
+.notice-note-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+}
+
+.notice-meta {
+  font-size: 12px;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.notice-author {
+  font-weight: 500;
+  color: var(--text-h);
+}
+
+.notice-dot {
+  opacity: 0.5;
+}
+
+.notice-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.btn-icon-sm {
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 4px 6px;
+  border-radius: 4px;
+  color: var(--text);
+}
+
+.btn-icon-sm:hover {
+  background: var(--code-bg);
+}
+
+/* Placement Cell */
+
+.placement-header-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.stats-bar {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.stat-tile {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px 18px;
+  background: var(--code-bg);
+}
+
+.stat-value {
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--text-h);
+  letter-spacing: -0.5px;
+}
+
+.stat-label {
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 4px;
+}
+
+.segmented-control {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 3px;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+
+.segment {
+  border: none;
+  background: transparent;
+  color: var(--text);
+  padding: 7px 16px;
+  border-radius: 6px;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.segment-active {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* Drive pipeline (kanban) */
+
+.drive-board {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(240px, 1fr));
+  gap: 16px;
+  overflow-x: auto;
+  padding-bottom: 8px;
+}
+
+.drive-column {
+  background: var(--code-bg);
+  border-radius: 10px;
+  padding: 12px;
+  min-width: 240px;
+}
+
+.drive-column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-h);
+  padding: 4px 4px 12px;
+}
+
+.drive-column-count {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  padding: 1px 8px;
+  font-size: 11px;
+  color: var(--text);
+}
+
+.drive-column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.drive-column-empty {
+  text-align: center;
+  font-size: 12px;
+  color: var(--text);
+  padding: 20px 0;
+  opacity: 0.6;
+}
+
+.drive-card {
+  background: var(--bg);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.drive-card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+}
+
+.drive-company {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.drive-ctc {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.drive-role {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-h);
+}
+
+.drive-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.drive-tag {
+  font-size: 11px;
+  background: var(--code-bg);
+  border: 1px solid var(--border);
+  padding: 2px 8px;
+  border-radius: 999px;
+  color: var(--text);
+}
+
+.drive-depts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.drive-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 8px;
+  border-top: 1px dashed var(--border);
+}
+
+.drive-placed-count {
+  font-size: 12px;
+  color: var(--text);
+}
+
+@media (max-width: 1100px) {
+  .drive-board {
+    grid-template-columns: repeat(2, minmax(240px, 1fr));
+  }
+}
+
+@media (max-width: 640px) {
+  .drive-board {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Companies */
+
+.company-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.company-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 16px;
+  position: relative;
+}
+
+.company-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.company-body {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.company-name {
+  margin: 0 0 2px;
+  font-size: 15px;
+}
+
+.company-industry {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.company-contact {
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.company-meta {
+  display: flex;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.company-card .notice-actions {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+/* Leaderboard */
+
+.rank-cell {
+  font-size: 16px;
+}
+
+.leaderboard-top {
+  background: var(--accent-bg);
+}
+
+.package-cell {
+  font-weight: 600;
+  color: var(--text-h);
+}
+
+.status-offered {
+  background: rgba(59, 130, 246, 0.12);
+  color: #3b82f6;
+}
+
+.status-accepted {
+  background: rgba(34, 197, 94, 0.12);
+  color: #16a34a;
+}
+
+.status-declined {
+  background: rgba(148, 163, 184, 0.2);
+  color: #64748b;
+}
+
+.field-label {
+  display: block;
+  font-size: 13px;
+  color: var(--text);
+  margin-bottom: 6px;
+}
+
+.dept-checkbox-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(90px, 1fr));
+  gap: 6px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 10px;
+}
+
+.dept-checkbox-grid .checkbox-label {
+  font-size: 13px;
+}
+
+/* Alumni directory */
+
+.year-input {
+  width: 110px;
+}
+
+.alumni-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.alumni-card {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.alumni-card:hover {
+  box-shadow: var(--shadow);
+  transform: translateY(-2px);
+}
+
+.alumni-card-top {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.alumni-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  flex-shrink: 0;
+}
+
+.alumni-identity {
+  min-width: 0;
+}
+
+.alumni-name-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.alumni-name {
+  margin: 0;
+  font-size: 15px;
+  color: var(--text-h);
+}
+
+.verified-badge {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  background: #3b82f6;
+  color: #fff;
+  font-size: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.alumni-subline {
+  font-size: 12px;
+  color: var(--text);
+  margin-top: 2px;
+}
+
+.alumni-role {
+  font-size: 13px;
+  color: var(--text-h);
+  font-weight: 500;
+}
+
+.alumni-location {
+  font-size: 12px;
+  color: var(--text);
+}
+
+.alumni-skills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.alumni-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border);
+  margin-top: auto;
+}
+
+.alumni-link {
+  font-size: 12px;
+  color: var(--accent);
+  text-decoration: none;
+}
+
+.alumni-link:hover {
+  text-decoration: underline;
+}
